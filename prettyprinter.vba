@@ -28,29 +28,22 @@ Private Function ParseLine(line As String) As Message
     msg.text = line
     Dim skypeRE As Object
     Set skypeRE = CreateObject("vbscript.regexp")
-    skypeRE.Pattern = "^\[(\d+)/(\d+)/(\d+) (\d+):(\d+):(\d+) (AM|PM)\] (.+): (.+)"
+    skypeRE.Pattern = "^\[(.+)\] (.+): (.+)"
     Dim m As Object
     Set m = skypeRE.Execute(line)
     If m Is Nothing Or m.Count = 0 Then
         ParseLine = msg
         Exit Function
     End If
-    If m(0).submatches.Count < 9 Then
+    If m(0).submatches.Count < 3 Then
         ParseLine = msg
         Exit Function
     End If
     msg.append = False ' Begin new message
     With m(0)
-        msg.timestamp = DateSerial( _
-                        .submatches(2), _
-                        .submatches(0), _
-                        .submatches(1))
-        msg.timestamp = DateAdd("h", .submatches(3), msg.timestamp)
-        msg.timestamp = DateAdd("n", .submatches(4), msg.timestamp)
-        msg.timestamp = DateAdd("s", .submatches(5), msg.timestamp)
-        '.submatches(6))
-        msg.author = .submatches(7)
-        msg.text = .submatches(8)
+        msg.timestamp = CDate(Split(.submatches(0), "|")(0))
+        msg.author = .submatches(1)
+        msg.text = .submatches(2)
     End With
     ParseLine = msg
 End Function
@@ -111,16 +104,8 @@ Public Sub ProcessClipboard()
     lastTimestamp = DateSerial(1970, 1, 1)
     Dim color As String
     color = "#000000"
-    text = ""
+    text = "<p>Chat</p>"
     For i = 0 To UBound(messages)
-        Dim gap As Long
-        gap = DateDiff("n", lastTimestamp, messages(i).timestamp)
-        If gap > 30 Then
-            text = text + "<p style='" _
-                    + "margin-top: 0;" _
-                    + "margin-bottom: 1em;" _
-                    + "'>" + Format(messages(i).timestamp) + "</p>"
-        End If
         If messages(i).append Then
             text = text + "<p style='" _
                     + "margin-top: 0;" _
@@ -129,6 +114,27 @@ Public Sub ProcessClipboard()
                     + "color:" + color _
                     + "'>"
         Else
+            Dim gap As Long
+            gap = DateDiff("n", lastTimestamp, messages(i).timestamp)
+            Debug.Print gap
+            If gap > 30 Then
+                Dim displayTimestamp As String
+                If gap > 60 * 24 Or _
+                    DatePart("y", lastTimestamp) <> DatePart("y", messages(i).timestamp) Then
+                    ' Full date and time
+                    displayTimestamp = Format(messages(i).timestamp)
+                Else
+                    ' Show time only
+                    displayTimestamp = Format(messages(i).timestamp, "Medium Time")
+                End If
+                text = text + "<p style='" _
+                        + "margin-top: 1em;" _
+                        + "margin-bottom: 1em;" _
+                        + "text-align: center;" _
+                        + "font-size: 0.875em;" _
+                        + "background-color: #eee;" _
+                        + "'>" + displayTimestamp + "</p>"
+            End If
             ad = authors(messages(i).authorIndex)
             color = colors(messages(i).authorIndex)
             Dim authorName As String
@@ -146,12 +152,19 @@ Public Sub ProcessClipboard()
                     + "'>"
             text = text + "<b>" + authorName + ":</b><br>"
         End If
+        
         text = text + messages(i).text
         text = text + "</p>" + vbLf
         lastTimestamp = messages(i).timestamp
     Next i
-    text = text + "<body><html>"
-    PutHTMLClipboard (Encode_UTF8(text))
+    'PutHTMLClipboard (Encode_UTF8(text))
+    
+    Dim mail As MailItem
+    Set mail = CreateItem(olMailItem)
+    mail.HTMLBody = text
+    mail.Display
+    mail.GetInspector.Activate
+    
     'ClipboardData.SetText (text)
     'ClipboardData.PutInClipboard
 End Sub
