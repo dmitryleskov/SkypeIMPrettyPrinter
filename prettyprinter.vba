@@ -1,6 +1,6 @@
 Option Explicit
 
-Dim ClipboardData As New MSForms.DataObject
+Private Const COLORTABLE = "#4573a7,#aa4644,#89a54e,#71588f,#4298af,#db843d"
 
 Type Message
     ' Extracted from clipboard
@@ -14,21 +14,18 @@ Type Message
 End Type
 
 Type AuthorData
-    fullName As String
+    fullName As String   ' Same as Message.author
     shortName As String
     initials As String
     color As String
 End Type
 
-Private Const COLORTABLE = "#4573a7,#aa4644,#89a54e,#71588f,#4298af,#db843d"
+Dim skypeRE As Object
 
 Private Function ParseLine(line As String) As Message
     Dim msg As Message
-    msg.append = True ' Continue previous message
+    msg.append = True ' Previous message continues
     msg.text = line
-    Dim skypeRE As Object
-    Set skypeRE = CreateObject("vbscript.regexp")
-    skypeRE.Pattern = "^\[(.+)\] (.+): (.+)"
     Dim m As Object
     Set m = skypeRE.Execute(line)
     If m Is Nothing Or m.Count = 0 Then
@@ -39,8 +36,9 @@ Private Function ParseLine(line As String) As Message
         ParseLine = msg
         Exit Function
     End If
-    msg.append = False ' Begin new message
+    msg.append = False ' New message begins
     With m(0)
+        ' Throw away the "Edited" timestamp
         msg.timestamp = CDate(Split(.submatches(0), "|")(0))
         msg.author = .submatches(1)
         msg.text = .submatches(2)
@@ -49,6 +47,9 @@ Private Function ParseLine(line As String) As Message
 End Function
 
 Public Sub ProcessClipboard()
+    Set skypeRE = CreateObject("vbscript.regexp")
+    skypeRE.Pattern = "^\[(.+)\] (.+): (.+)"
+    Dim ClipboardData As New MSForms.DataObject
     ClipboardData.GetFromClipboard
     Dim text As String
     text = ClipboardData.GetText
@@ -57,6 +58,7 @@ Public Sub ProcessClipboard()
     Dim messages() As Message
     ReDim messages(UBound(lines))
     Dim authors() As AuthorData
+    ' In most cases, there will be just two people in the chat
     ReDim authors(1)
     Dim authorCount As Integer
     authorCount = 0
@@ -76,7 +78,7 @@ Public Sub ProcessClipboard()
                     lastAuthor = .author
                     .firstByAuthor = True
                     Dim a As Integer
-                    For a = 0 To authorCount
+                    For a = 0 To authorCount - 1
                         If authors(a).fullName = .author Then
                             .firstByAuthor = False
                             .authorIndex = a
@@ -100,12 +102,39 @@ Public Sub ProcessClipboard()
             End If
         End With
     Next i
+    
+    If authorCount > 0 Then
+        ' Skype IM content detected
+        text = "<p>Participants: "
+        Dim sep As String
+        sep = ""
+        For a = 0 To authorCount - 1
+            text = text & sep & authors(a).fullName
+            sep = ", "
+        Next a
+        text = text & "</p>"
+    End If
+        
+    i = 0
+    
+    ' Handle the leftover lines at the top or non-Skype content
+    Do While i <= UBound(messages)
+        If Not messages(i).append Then
+            Exit Do
+        End If
+        text = text & "<p style='" _
+                    & "margin-top: 0;" _
+                    & "margin-bottom: 0.5em;" _
+                    & "margin-left: 3em;" _
+                    & "'>" & messages(i).text & "</p>" & vbLf
+        i = i + 1
+    Loop
+    
     Dim lastTimestamp As Date
     lastTimestamp = DateSerial(1970, 1, 1)
     Dim color As String
     color = "#000000"
-    text = "<p>Chat</p>"
-    For i = 0 To UBound(messages)
+    Do While i <= UBound(messages)
         If messages(i).append Then
             text = text + "<p style='" _
                     + "margin-top: 0;" _
@@ -156,7 +185,8 @@ Public Sub ProcessClipboard()
         text = text + messages(i).text
         text = text + "</p>" + vbLf
         lastTimestamp = messages(i).timestamp
-    Next i
+        i = i + 1
+    Loop
     'PutHTMLClipboard (Encode_UTF8(text))
     
     Dim mail As MailItem
@@ -168,4 +198,5 @@ Public Sub ProcessClipboard()
     'ClipboardData.SetText (text)
     'ClipboardData.PutInClipboard
 End Sub
+
 
