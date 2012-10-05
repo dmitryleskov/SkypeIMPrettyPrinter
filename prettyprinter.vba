@@ -100,6 +100,11 @@ Public Sub ProcessClipboard()
             End If
         End With
     Next i
+    
+    Dim URLRE As Object
+    Set URLRE = CreateObject("vbscript.regexp")
+    URLRE.Pattern = "^(.*)(https?:\/\/?[\da-z\.-]+\.[a-z\.]{2,6}([\/\w\.-]*)*\/?)(.*)$"
+    
     Dim lastTimestamp As Date
     lastTimestamp = DateSerial(1970, 1, 1)
     Dim color As String
@@ -151,6 +156,17 @@ Public Sub ProcessClipboard()
                     + "color: " + color _
                     + "'>"
             text = text + "<b>" + authorName + ":</b><br>"
+        End If
+        
+        Dim m As Object
+        Set m = URLRE.Execute(messages(i).text)
+        If m.Count = 0 Then
+            Debug.Print "No Match"
+        Else
+            Debug.Print m(0).submatches(0)
+            Debug.Print m(0).submatches(1)
+            Debug.Print m(0).submatches(2)
+            Stop
         End If
         
         text = text + messages(i).text
