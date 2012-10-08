@@ -40,6 +40,10 @@ Private Function ParseLine(line As String) As Message
     With m(0)
         ' Throw away the "Edited" timestamp
         msg.timestamp = CDate(Split(.submatches(0), "|")(0))
+        If CDbl(msg.timestamp) < 1# Then
+            ' Only time is present, add today's date
+            msg.timestamp = CDate(CDbl(date) + CDbl(msg.timestamp))
+        End If
         msg.author = .submatches(1)
         msg.text = .submatches(2)
     End With
@@ -131,7 +135,7 @@ Public Sub ProcessClipboard()
     Loop
     
     Dim lastTimestamp As Date
-    lastTimestamp = DateSerial(1970, 1, 1)
+    lastTimestamp = DateSerial(1899, 1, 1)
     Dim color As String
     color = "#000000"
     Do While i <= UBound(messages)
@@ -145,8 +149,9 @@ Public Sub ProcessClipboard()
         Else
             Dim gap As Long
             gap = DateDiff("n", lastTimestamp, messages(i).timestamp)
-            Debug.Print gap
-            If gap > 30 Then
+            lastTimestamp = messages(i).timestamp
+            Debug.Print "timestamp="; messages(i).timestamp; " gap="; gap
+            If gap > 20 Then
                 Dim displayTimestamp As String
                 If gap > 60 * 24 Or _
                     DatePart("y", lastTimestamp) <> DatePart("y", messages(i).timestamp) Then
@@ -160,7 +165,7 @@ Public Sub ProcessClipboard()
                         + "margin-top: 1em;" _
                         + "margin-bottom: 1em;" _
                         + "text-align: center;" _
-                        + "font-size: 0.875em;" _
+                        + "font-size: 0.83333em;" _
                         + "background-color: #eee;" _
                         + "'>" + displayTimestamp + "</p>"
             End If
@@ -184,7 +189,6 @@ Public Sub ProcessClipboard()
         
         text = text + messages(i).text
         text = text + "</p>" + vbLf
-        lastTimestamp = messages(i).timestamp
         i = i + 1
     Loop
     'PutHTMLClipboard (Encode_UTF8(text))
@@ -198,5 +202,3 @@ Public Sub ProcessClipboard()
     'ClipboardData.SetText (text)
     'ClipboardData.PutInClipboard
 End Sub
-
-
