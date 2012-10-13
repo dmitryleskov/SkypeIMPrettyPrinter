@@ -1,7 +1,29 @@
+Attribute VB_Name = "SkypeIMPrettyPrinter"
+'
+' SkypeIMPrettyPrinter.bas - skype IM chat log formatter for Micorsoft Outlook
+'
+' Author: Dmitry Leskov, www.dmitryleskov.com
+'
+' Copyright (c) 2012 Excelsior LLC, www.excelsior-usa.com
+'
 Option Explicit
 
+''' CONFIGURATION PARAMETERS ''''''''''''''''''''''''''''''''''''''''
+'''  (edit to your liking)   ''''''''''''''''''''''''''''''''''''''''
+
+' Time gap between messages in a continuous conversaion, in minutes
+' Exceeding forces timestamp insertion
+Private Const MAXGAP = 20
+
+' Colors assigned to authors
+' RGB values must be prefixed with '#', color names also work
 Private Const COLORTABLE = "#4573a7,#aa4644,#89a54e,#71588f,#4298af,#db843d"
 
+
+''' DO NOT MODIFY ANYTHING BELOW THIS POINT '''''''''''''''''''''''''
+'''   (unless you know what you are doing)  '''''''''''''''''''''''''
+
+' Data type to represent a single message
 Type Message
     ' Extracted from clipboard
     append As Boolean
@@ -13,6 +35,7 @@ Type Message
     firstByAuthor As Boolean
 End Type
 
+' Data type to represent information about authors
 Type AuthorData
     fullName As String   ' Same as Message.author
     shortName As String
@@ -20,7 +43,15 @@ Type AuthorData
     color As String
 End Type
 
+' Regular expression to match lines against.
+' Lines containing a timestamp and an author name will match,
+' indicating the start of a message
+' Non-matching lines are appended to the current message
 Dim skypeRE As Object
+Private Sub InitSkypeRE()
+    Set skypeRE = CreateObject("vbscript.regexp")
+    skypeRE.Pattern = "^\[(.+)\] (.+): (.+)"
+End Sub
 
 Private Function ParseLine(line As String) As Message
     Dim msg As Message
@@ -28,11 +59,11 @@ Private Function ParseLine(line As String) As Message
     msg.text = line
     Dim m As Object
     Set m = skypeRE.Execute(line)
-    If m Is Nothing Or m.Count = 0 Then
+    If m Is Nothing Or m.count = 0 Then
         ParseLine = msg
         Exit Function
     End If
-    If m(0).submatches.Count < 3 Then
+    If m(0).submatches.count < 3 Then
         ParseLine = msg
         Exit Function
     End If
@@ -51,8 +82,8 @@ Private Function ParseLine(line As String) As Message
 End Function
 
 Public Sub ProcessClipboard()
-    Set skypeRE = CreateObject("vbscript.regexp")
-    skypeRE.Pattern = "^\[(.+)\] (.+): (.+)"
+    InitSkypeRE
+    ' Fetch text from clipboard
     Dim ClipboardData As New MSForms.DataObject
     ClipboardData.GetFromClipboard
     Dim text As String
@@ -147,14 +178,18 @@ Public Sub ProcessClipboard()
                     + "color:" + color _
                     + "'>"
         Else
+            ' Delay from previous message in minutes
             Dim gap As Long
             gap = DateDiff("n", lastTimestamp, messages(i).timestamp)
+            ' Has the conversation rolled over midnight?
+            Dim sameDay As Boolean
+            sameDay = DatePart("y", lastTimestamp) <> DatePart("y", messages(i).timestamp)
+
             lastTimestamp = messages(i).timestamp
             Debug.Print "timestamp="; messages(i).timestamp; " gap="; gap
-            If gap > 20 Then
+            If gap > MAXGAP Then
                 Dim displayTimestamp As String
-                If gap > 60 * 24 Or _
-                    DatePart("y", lastTimestamp) <> DatePart("y", messages(i).timestamp) Then
+                If gap > 24 * 60 Or Not sameDay Then
                     ' Full date and time
                     displayTimestamp = Format(messages(i).timestamp)
                 Else
@@ -202,3 +237,4 @@ Public Sub ProcessClipboard()
     'ClipboardData.SetText (text)
     'ClipboardData.PutInClipboard
 End Sub
+
