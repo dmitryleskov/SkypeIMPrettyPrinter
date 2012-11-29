@@ -7,3 +7,6 @@ Refer to the official page for
 ## LICENSE ##
 
 **Skype IM Pretty Printer** is released under the MIT/X11 license (see LICENSE.)
+
+(c) 2012 [Excelsior LLC](http://www.excelsior-usa.com).
+
