@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Skype IM Pretty Printer</title>
+  <link rel="stylesheet" href="bootstrap.min.css">
+</head>
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Skype IM Pretty Printer</a>
+        <div class="nav-collapse collapse">
+
+          <ul class="nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#problem">Problem</a></li>
+            <li><a href="#solution">Solution</a></li>
+            <li><a href="#install">Installation</a></li>
+            <li><a href="#config">Configure</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Main hero unit for a primary marketing message or call to action -->
+    <div class="hero-unit">
+
+      <h1>Skype IM Pretty Printer</h1>
+      <p>
+        This small project was born out of annoyance and frustration.
+      </p>
+      <p>
+        From time to time, I need to file an important excerpt from a Skype IM chat 
+        for later retrieval, or email it to a third-party.
+      </p>
+      <p>
+	I would select that excerpt, copy it to clipboard and paste into a new 
+	Exchange Mail or Post item.
+      </p>
+      <p>
+        However, the <a href="#problem">result</a> is hard to read so I have to 
+        format it manually.
+      </p>
+    </div>
+
+    <section id="problem">
+      <h1 class="page-header">The Problem</h1>
+      <h2>Nicely formatted chat&hellip;</h2>
+      <div class="row">
+        <div class="span6">
+          <p><img src="shot1.png"></p>
+        </div>
+        <div class="span6">
+          <ul>
+            <li>Clearly seen participant names</li>
+            <li>Non-obtrusive timestamps</li>
+            <li>Visually separated messages</li>
+            <li>Clickable URLs</li>
+            <li>Emoticons</li>
+          </ul>
+        </div>
+      </div>
+      <h2>&hellip;becomes alphabet soup</h2>
+      <div class="row">
+        <div class="span6">
+          <p><img src="shot2.png"></p>
+        </div>
+        <div class="span6">
+          <ul>
+            <li>Looks like one block of text</li>
+            <li>No dates shown if the chat is fresh&hellip;</li>
+            <li>&hellip;yet timestamps clutter the view</li>
+            <li>Author names are hard to identify</li>
+            <li>URLs/emoticons are not recognized</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section id="solution">
+      <h1 class="page-header">The Solution</h1>
+      <p>
+        Outlook VBA comes to the rescue! What else would you have expected from 
+        a project done by a Director of Marketing, anyway?
+      </p>
+      <div class="row">
+        <div class="span6">
+          <p><img src="shot3.png"></p>
+        </div>
+        <div class="span6">
+          <p>
+            Just 200 lines of code and my Outlook has a toolbar button&hellip;
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span6">
+          <p><img src="shot4.png"></p>
+        </div>
+        <div class="span6">
+          <p>
+            &hellip;which creates a new message and pastes a nicely formatted chat in it!
+          </p>
+          <ul>
+            <li>Participant names empahsized, shortened on repeat</li>
+            <li>Full date inserted at the top</li>
+            <li>Timestamps appear only after long breaks</li>
+            <li>There is vertical space between messages</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="install">
+      <h1 class="page-header">Installation</h1>
+      <p>
+        Unfortunately, I know of no elegant way to distribute VBA macros,
+        and I have not had the time (and skills) to convert this macro
+        into an Outlook COM Add-in. So below is the manual installation 
+        procedure that has worked for my colleagues at Excelsior.
+      </p>
+      <p>
+	<span class="label label-info">NOTICE</span> 
+	I have only verified the below instructions against the US English version of
+	Outlook 2007.
+      </p>
+      <h3>Step 1: Create a Digital Certificate</h3>
+      <p>
+        If you have never created or installed any Office macros,
+        you need to create a self-signed digital certificate first.
+        Otherwise, you may skip this step.
+      </p>
+      <ol>
+        <li>
+          From the Start Menu, select 
+          <strong>All&nbsp;Programs</strong>&nbsp;/ 
+          <strong>Microsoft&nbsp;Office</strong>&nbsp;/ 
+          <strong>Microsoft&nbsp;Office&nbsp;Tools</strong>&nbsp;/ 
+          <strong>Digital&nbsp;Certificate&nbsp;for&nbsp;VBA&nbsp;Projects</strong>
+        </li>
+        <li>
+          Enter a name for the certificate, e.g. your Windows user name, and click
+          <strong>OK</strong>.
+        </li>
+      </ol>
+      <h3>Step 2: Enable Signed Macros</h3>
+      <ol>
+        <li>
+          In the main Outlook window, select <strong>Trust Center</strong>
+          from the <strong>Tools</strong> menu, and then select 
+          <strong>Macro Security</strong>.
+        </li>
+        <li>
+          Make sure that the option 
+          <strong>Warnings for signed macros; all unsigned macros are disabled</strong>
+          is selected and click <strong>OK</strong>.
+        </li>
+      </ol>
+      <h3>Step 3: Import the Macro</h3>
+      <ol>
+        <li>
+          Press <strong>Alt-F11</strong>. The Visual Basic Editor shall open.
+        </li>
+        <li>
+          On the <strong>File</strong> menu, click <strong>Import File</strong>.
+        </li>
+        <li>
+          Select the <strong>SkypeIMPrettyPrinter.bas</strong> file
+          and click <strong>Open</strong>.
+          <strong>SkypeIMPrettyPrinter</strong> will appear in the list of modules.
+        </li>
+        <li>
+          On the <strong>Tools</strong> menu, click <strong>Digital Signature</strong>,
+          then click <strong>Choose&hellip;</strong>, select the previously created 
+          certificate, and click <strong>OK</strong> (twice.)
+        </li>
+        <li>
+          Exit Outlook. Before closing, it will prompt you 
+          to save <strong>VbaProject.OTM</strong>. Confirm the save.
+        </li>
+        <li>
+          Launch Outlook again.
+        </li>
+        <li>
+          If you have created a new digital signature on Step 1, 
+          do the following:
+          <ol>
+            <li>
+              Try to open the Visual Basic Editor,
+              e.g. by pressing <strong>Alt-F11</strong>.
+              You should see a security notice dialog at this point, warning you that the
+              publisher has not been authenticated. That is expected behavior, 
+              as you are using a self-signed certificate. 
+            </li>
+            <li>
+              Click <strong>Trust all documents from this publisher</strong>.
+            </li>
+            <li>
+              Close the Visual Basic Editor.
+            </li>
+          </ol>
+        </li>
+      </ol>
+      <h3>Step 4: Add a Toolbar Button</h3>
+      <ol>
+        <li>
+          On the <strong>Tools</strong> menu, click <strong>Customize</strong>,
+          then select the <strong>Commands</strong> tab, and select 
+          <strong>Macros</strong> in the list of categories.
+        </li>
+        <li>
+          Drag the freshly added <strong>SkypeIMPrettyPrinter</strong> macro 
+          to the desired place in the Outlook toolbar.
+        </li>
+        <li>
+          Right click the just added toolbar button to customize it further &mdash;
+          choose the display style, rename, and/or change the default icon.
+        </li>
+        <li>
+          Close the Customize dialog.
+        </li>
+      </ol>
+      <h3>Step 5: Test</h3>
+      <ol>
+        <li>
+          Copy some messages from a Skype chat to the clipboard.
+        </li>
+        <li>
+          Click the Outlook toolbar button you have just added.
+        </li>
+        <li>
+          If everything is alright, a new Outlook message shall be created 
+          contaning the formatted messages from your Skype chat.
+        </li>
+      </ol>
+    </section>
+
+    <hr>
+
+    <footer>
+      <p>&copy; Excelsior LLC 2012</p>
+    </footer>
+
+  </div> <!-- /container -->
+
+  <script src="jquery-1.8.2.min.js "></script>
+  <script src="bootstrap.min.js"></script>
+</body>
+</html>
