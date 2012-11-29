@@ -1,6 +1,6 @@
 Attribute VB_Name = "SkypeIMPrettyPrinter"
 '
-' SkypeIMPrettyPrinter.bas - skype IM chat log formatter for Micorsoft Outlook
+' SkypeIMPrettyPrinter.bas - skype IM chat log formatter for Microsoft Outlook
 '
 ' Author: Dmitry Leskov, www.dmitryleskov.com
 '
