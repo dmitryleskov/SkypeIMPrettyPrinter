@@ -50,7 +50,7 @@ End Type
 Dim skypeRE As Object
 Private Sub InitSkypeRE()
     Set skypeRE = CreateObject("vbscript.regexp")
-    skypeRE.Pattern = "^\[(.+)\] (.+): (.+)"
+    skypeRE.Pattern = "^\[([^\]]+)\] ([^:]+): (.+)"
 End Sub
 
 Private Function ParseLine(line As String) As Message
