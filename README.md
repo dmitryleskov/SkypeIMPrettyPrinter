@@ -1,7 +1,6 @@
 # Skype IM Pretty Printer #
 
 Refer to the official page for 
-[download](http://dmitryleskov.github.com/SkypeIMPrettyPrinter/) and 
 [installation instructions](http://dmitryleskov.github.com/SkypeIMPrettyPrinter/#install).
 
 ## LICENSE ##
