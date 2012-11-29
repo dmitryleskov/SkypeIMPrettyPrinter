@@ -186,12 +186,31 @@
           Exit Outlook. Before closing, it will prompt you 
           to save <strong>VbaProject.OTM</strong>. Confirm the save.
         </li>
-      </ol>
-      <h3>Step 4: Add a Toolbar Button</h3>
-      <ol>
         <li>
           Launch Outlook again.
         </li>
+        <li>
+          If you have created a new digital signature on Step 1, 
+          do the following:
+          <ol>
+            <li>
+              Try to open the Visual Basic Editor,
+              e.g. by pressing <strong>Alt-F11</strong>.
+              You should see a security notice dialog at this point, warning you that the
+              publisher has not been authenticated. That is expected behavior, 
+              as you are using a self-signed certificate. 
+            </li>
+            <li>
+              Click <strong>Trust all documents from this publisher</strong>.
+            </li>
+            <li>
+              Close the Visual Basic Editor.
+            </li>
+          </ol>
+        </li>
+      </ol>
+      <h3>Step 4: Add a Toolbar Button</h3>
+      <ol>
         <li>
           On the <strong>Tools</strong> menu, click <strong>Customize</strong>,
           then select the <strong>Commands</strong> tab, and select 
